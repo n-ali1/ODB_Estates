@@ -4,5 +4,5 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/ODB-Estates/', // Replace 'odb-estates' with your exact repo name
+  base: '/ODB_Estates/', // Replace 'odb-estates' with your exact repo name
 })
