@@ -1,10 +1,63 @@
 import { properties } from "./data";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import {
+  motion,
+  useMotionValue,
+  useTransform,
+  animate,
+  useInView,
+} from "framer-motion";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "./assets/vite.svg";
 import heroImg from "./assets/hero.png";
 import "./App.css";
+
+const RollingNumber = ({ value }) => {
+  const count = useMotionValue(0);
+  const ref = useRef(null); // Reference to watch this specific number
+  const isInView = useInView(ref, { once: true, margin: "-100px" }); // Triggers when 100px into view
+
+  const numericValue = parseFloat(value.replace(/[^0-9.]/g, "")) || 0;
+  const suffix = value.replace(/[0-9.]/g, "");
+
+  const rounded = useTransform(count, (latest) => {
+    return latest % 1 === 0 ? Math.round(latest) : latest.toFixed(1);
+  });
+
+  const runAnimation = (speed) => {
+    count.set(0);
+    animate(count, numericValue, {
+      duration: speed,
+      ease: "easeOut",
+    });
+  };
+
+  // 2. The trigger now depends on 'isInView'
+  useEffect(() => {
+    if (isInView) {
+      runAnimation(2);
+    }
+  }, [isInView, numericValue]);
+
+  const handleHover = () => {
+    runAnimation(1);
+  };
+
+  return (
+    // 3. Attach the 'ref' here
+    <motion.span
+      ref={ref}
+      onMouseEnter={handleHover}
+      whileHover={{ scale: 1.1, color: "#1e3a8a" }}
+      whileTap={{ scale: 0.9 }}
+      className="cursor-pointer inline-block"
+    >
+      {value.startsWith("£") ? "£" : ""}
+      <motion.span>{rounded}</motion.span>
+      {suffix.replace("£", "")}
+    </motion.span>
+  );
+};
 
 function App() {
   // This state stores the property object when a user clicks 'View Details'
@@ -60,10 +113,10 @@ function App() {
   const [count, setCount] = useState(0);
 
   const stats = [
-    { label: "Properties Managed", value: "25+" },
-    { label: "Portfolio Value", value: "£12M+" },
+    { label: "Properties Managed", value: "2" },
+    { label: "Portfolio Value", value: "£200k+" },
     { label: "Annual Yield", value: "8.4%" },
-    { label: "Successful Flips", value: "18" },
+    { label: "Successful Flips", value: "1" },
   ];
 
   return (
@@ -95,16 +148,20 @@ function App() {
           <div className="flex justify-center relative">
             <div
               className={`transition-all duration-500 ease-in-out transform ${
-                isScrolled
+                // Trigger "small" mode if scrolled OR if mobile menu is open
+                isScrolled || isMenuOpen
                   ? "scale-90 translate-y-0"
-                  : "scale-150 translate-y-4 md:translate-y-6"
+                  : "scale-125 md:scale-150 translate-y-4 md:translate-y-6"
               }`}
             >
               <div
                 className={`p-2 transition-all duration-500 ${
                   isScrolled
                     ? "bg-transparent"
-                    : "bg-white/80 rounded-xl md:rounded-2xl shadow-2xl border border-orange-200"
+                    : "bg-white/85 rounded-xl md:rounded-2xl shadow-2xl border border-orange-200"
+                } ${
+                  isMenuOpen &&
+                    "bg-white/85 rounded-xl md:rounded-2xl shadow-2xl border border-orange-200"
                 }`}
               >
                 <img
@@ -130,7 +187,8 @@ function App() {
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className={`md:hidden p-2 rounded-lg transition-colors ${
-                isScrolled ? "text-slate-900" : "text-white"
+                // If scrolled OR menu is open, use dark icon; otherwise use white icon
+                isScrolled || isMenuOpen ? "text-slate-900" : "text-white"
               }`}
             >
               <svg
@@ -159,9 +217,9 @@ function App() {
         <div
           className={`${
             isMenuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
-          } md:hidden overflow-hidden transition-all duration-500 bg-white shadow-xl`}
+          } md:hidden overflow-hidden transition-all duration-500 bg-white shadow-xl rounded-2xl`}
         >
-          <div className="flex flex-col py-8 space-y-6 text-center font-bold text-slate-800 uppercase tracking-widest text-sm">
+          <div className="flex flex-col py-8 space-y-6 text-center font-bold text-slate-800 uppercase tracking-widest text-sm ">
             <a href="#about" onClick={() => setIsMenuOpen(false)}>
               About Us
             </a>
@@ -223,12 +281,14 @@ function App() {
           {stats.map((stat, index) => (
             <div
               key={index}
-              className="p-6 text-center hover:bg-slate-50 transition-colors"
+              className="p-6 text-center hover:bg-slate-50 transition-colors group"
             >
+              {/* REPLACED THIS LINE BELOW */}
               <p className="text-3xl font-black text-blue-900 mb-1">
-                {stat.value}
+                <RollingNumber value={stat.value} />
               </p>
-              <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
+
+              <p className="text-xs font-bold uppercase tracking-widest text-slate-400 group-hover:text-blue-900 transition-colors">
                 {stat.label}
               </p>
             </div>
@@ -239,51 +299,74 @@ function App() {
       {/* Property Grid */}
       <main id="portfolio" className="max-w-7xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {properties.map((item) => (
-            <div
+          {properties.map((item, index) => (
+            <motion.div
               key={item.id}
-              className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 border border-slate-100"
+              // 1. Initial state (hidden and slightly down)
+              initial={{ opacity: 0, y: 50 }}
+              // 2. Animate to this state when in view
+              whileInView={{ opacity: 1, y: 0 }}
+              // 3. Only animate once
+              viewport={{ once: true, margin: "-50px" }}
+              // 4. Staggered transition based on index
+              transition={{
+                duration: 0.6,
+                delay: index * 0.1, // Each card waits 0.1s longer than the last
+                ease: "easeOut",
+              }}
+              className="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-slate-100"
             >
-              {/* Image Container */}
+              {/* ... keep all your existing card content inside here (Image, Title, Price, Button) ... */}
               <div className="relative h-64 overflow-hidden">
                 <img
                   src={item.image}
                   alt={item.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
-                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest text-blue-900">
+                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest text-blue-900 shadow-sm">
                   {item.status}
                 </div>
               </div>
 
-              {/* Content */}
               <div className="p-6">
-                <p className="text-blue-600 text-sm font-semibold mb-1">
+                <h3 className="text-xl font-black text-slate-900 mb-1">
+                  {item.title}
+                </h3>
+                <p className="text-slate-500 text-sm mb-4 flex items-center gap-1">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-4 h-4"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
+                    />
+                  </svg>
                   {item.location}
                 </p>
-                <h3 className="text-xl font-bold mb-2">{item.title}</h3>
-
-                <div className="flex items-center gap-4 text-slate-500 text-sm mb-4">
-                  <span>{item.beds} Beds</span>
-                  <span>•</span>
-                  <span>{item.baths} Baths</span>
-                  <span>•</span>
-                  <span>{item.type}</span>
-                </div>
-
                 <div className="flex justify-between items-center pt-4 border-t border-slate-50">
-                  <span className="text-2xl font-black text-slate-900">
+                  <p className="text-2xl font-black text-blue-900">
                     {item.price}
-                  </span>
+                  </p>
                   <button
                     onClick={() => openModal(item)}
-                    className="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-900 transition-colors"
+                    className="bg-slate-900 text-white px-5 py-2 rounded-xl text-xs font-bold hover:bg-blue-900 transition-colors shadow-lg shadow-slate-900/10"
                   >
-                    View Details
+                    Details
                   </button>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </main>
@@ -293,19 +376,28 @@ function App() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col lg:flex-row items-center gap-16">
             {/* Left Side: Professional Image */}
-            <div className="w-full lg:w-1/2 relative">
-              <div className="absolute -top-4 -left-4 w-24 h-24 bg-blue-50 rounded-full z-0"></div>
-              <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl border-8 border-white">
-                <img
-                  src="images/partners.jpg"
-                  alt="ODB Estates Founders"
-                  className="w-full h-auto object-cover aspect-4/5 md:aspect-auto hover:scale-105 transition-transform duration-700"
-                />
+            <motion.div
+              initial={{ opacity: 0, x: -100 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="w-full lg:w-1/2"
+            >
+              <div className="w-full lg:w-1/2 relative">
+                <div className="absolute -top-4 -left-4 w-24 h-24 bg-blue-50 rounded-full z-0"></div>
+                <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl border-8 border-white">
+                  <img
+                    src="images/partners.jpg"
+                    alt="ODB Estates Founders"
+                    className="w-full h-auto object-cover aspect-4/5 md:aspect-auto hover:scale-105 transition-transform duration-700"
+                  />
+                </div>
+                <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-slate-100 rounded-2xl -z-10"></div>
               </div>
-              <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-slate-100 rounded-2xl -z-10"></div>
-            </div>
+            </motion.div>
 
             {/* Right Side: Your Story */}
+
             <div className="w-full lg:w-1/2">
               <span className="text-blue-600 font-bold uppercase tracking-[0.2em] text-sm mb-4 block">
                 Behind ODB Estates
