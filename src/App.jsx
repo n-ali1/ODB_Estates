@@ -150,7 +150,7 @@ function App() {
               className={`transition-all duration-500 ease-in-out transform ${
                 // Trigger "small" mode if scrolled OR if mobile menu is open
                 isScrolled || isMenuOpen
-                  ? "scale-90 translate-y-0"
+                  ? "scale-100 translate-y-0"
                   : "scale-125 md:scale-150 translate-y-4 md:translate-y-6"
               }`}
             >
@@ -217,7 +217,7 @@ function App() {
         <div
           className={`${
             isMenuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
-          } md:hidden overflow-hidden transition-all duration-500 bg-white shadow-xl rounded-2xl`}
+          } md:hidden overflow-hidden transition-all duration-500 bg-white shadow-xl rounded-2xl mt-2 md:mt-0 `}
         >
           <div className="flex flex-col py-8 space-y-6 text-center font-bold text-slate-800 uppercase tracking-widest text-sm ">
             <a href="#about" onClick={() => setIsMenuOpen(false)}>
@@ -376,14 +376,14 @@ function App() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col lg:flex-row items-center gap-16">
             {/* Left Side: Professional Image */}
-            <motion.div
+           
+              <div className="w-full lg:w-1/2 relative">
+              <motion.div
               initial={{ opacity: 0, x: -100 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="w-full lg:w-1/2"
             >
-              <div className="w-full lg:w-1/2 relative">
                 <div className="absolute -top-4 -left-4 w-24 h-24 bg-blue-50 rounded-full z-0"></div>
                 <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl border-8 border-white">
                   <img
@@ -393,8 +393,9 @@ function App() {
                   />
                 </div>
                 <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-slate-100 rounded-2xl -z-10"></div>
+                </motion.div>
               </div>
-            </motion.div>
+            
 
             {/* Right Side: Your Story */}
 
