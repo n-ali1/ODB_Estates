@@ -108,7 +108,7 @@ function App() {
                 }`}
               >
                 <img
-                  src="/logo.svg"
+                  src="logo.svg"
                   alt="ODB Estates"
                   className="h-16 md:h-20 w-auto"
                 />
@@ -297,7 +297,7 @@ function App() {
               <div className="absolute -top-4 -left-4 w-24 h-24 bg-blue-50 rounded-full z-0"></div>
               <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl border-8 border-white">
                 <img
-                  src="/images/partners.jpg"
+                  src="images/partners.jpg"
                   alt="ODB Estates Founders"
                   className="w-full h-auto object-cover aspect-4/5 md:aspect-auto hover:scale-105 transition-transform duration-700"
                 />
