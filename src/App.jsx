@@ -234,7 +234,7 @@ function App() {
       </nav>
 
       {/* Hero Section */}
-      <header className="relative h-175 pt-20 flex items-center justify-center overflow-hidden">
+      <header className="relative h-175 pt-32 sm:pt-20 flex items-center justify-center overflow-hidden">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
           <img
