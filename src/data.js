@@ -12,7 +12,7 @@ export const properties = [
     },
     {
       id: 2,
-      title: "Centeral Located Apartment",
+      title: "Central Located Apartment",
       location: "Carluke, Scotland",
       price: "£1,000 pcm",
       status: "For Rent",
