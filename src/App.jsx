@@ -120,12 +120,12 @@ function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
+    <div className="min-h-screen bg-slate-50 text-slate-900 overflow-x-hidden">
       {/* Navigation */}
       <nav
         className={`fixed top-0 w-full z-50 transition-all duration-500 px-4 md:px-6 ${
           isScrolled
-            ? "py-2 bg-white/65 backdrop-blur-sm shadow-md"
+            ? "py-0 pt-2 md:py-2 bg-white/65 backdrop-blur-sm shadow-md"
             : "py-6 md:py-8 bg-transparent"
         }`}
       >
@@ -155,13 +155,13 @@ function App() {
               }`}
             >
               <div
-                className={`p-2 transition-all duration-500 ${
+                className={`p-0 md:p-2 transition-all duration-500 ${
                   isScrolled
                     ? "bg-transparent"
                     : "bg-white/85 rounded-xl md:rounded-2xl shadow-2xl border border-orange-200"
                 } ${
                   isMenuOpen &&
-                    "bg-white/85 rounded-xl md:rounded-2xl shadow-2xl border border-orange-200"
+                  "bg-white/85 rounded-xl md:rounded-2xl shadow-2xl border border-orange-200"
                 }`}
               >
                 <img
@@ -217,9 +217,9 @@ function App() {
         <div
           className={`${
             isMenuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
-          } md:hidden overflow-hidden transition-all duration-500 bg-white shadow-xl rounded-2xl mt-2 md:mt-0 `}
+          } md:hidden overflow-hidden transition-all duration-500 bg-white shadow-xl rounded-2xl my-2 md:mt-0 `}
         >
-          <div className="flex flex-col py-8 space-y-6 text-center font-bold text-slate-800 uppercase tracking-widest text-sm ">
+          <div className="flex flex-col py-6 space-y-6 text-center font-bold text-slate-800 uppercase tracking-widest text-sm ">
             <a href="#about" onClick={() => setIsMenuOpen(false)}>
               About Us
             </a>
@@ -234,7 +234,7 @@ function App() {
       </nav>
 
       {/* Hero Section */}
-      <header className="relative h-175 pt-32 sm:pt-20 flex items-center justify-center overflow-hidden">
+      <header className="relative h-175 pt-32 flex items-center justify-center overflow-hidden">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
           <img
@@ -276,8 +276,8 @@ function App() {
       </header>
 
       {/* Stats Bar */}
-      <div className="relative z-20 -mt-10 max-w-5xl mx-auto px-6">
-        <div className="bg-white rounded-2xl shadow-xl border border-slate-100 grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-100 overflow-hidden">
+      <div className="relative z-20 mt-6 md:-mt-10 max-w-5xl mx-auto px-6">
+        <div className="bg-white rounded-2xl shadow-2xl border border-orange-200 grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-100 overflow-hidden">
           {stats.map((stat, index) => (
             <div
               key={index}
@@ -297,7 +297,7 @@ function App() {
       </div>
 
       {/* Property Grid */}
-      <main id="portfolio" className="max-w-7xl mx-auto px-6 py-12">
+      <main id="portfolio" className="max-w-7xl mx-auto px-6 py-8 md:py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {properties.map((item, index) => (
             <motion.div
@@ -310,7 +310,7 @@ function App() {
               viewport={{ once: true, margin: "-50px" }}
               // 4. Staggered transition based on index
               transition={{
-                duration: 0.6,
+                duration: 0.2,
                 delay: index * 0.1, // Each card waits 0.1s longer than the last
                 ease: "easeOut",
               }}
@@ -372,40 +372,23 @@ function App() {
       </main>
 
       {/* About Us Section */}
-      <section id="about" className="py-24 bg-white px-6">
+      <section id="about" className="py-10 md:py-20 bg-white px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col lg:flex-row items-center gap-16">
-            {/* Left Side: Professional Image */}
-           
-              <div className="w-full lg:w-1/2 relative">
-              <motion.div
-              initial={{ opacity: 0, x: -100 }}
+          <div className="flex flex-col lg:flex-row  items-center gap-12 lg:gap-20">
+            {/* 1. The Text Content (Now comes first on mobile) */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
+              className="w-full lg:w-1/2 order-1 lg:order-2 lg:pb-24" // Added order-1
             >
-                <div className="absolute -top-4 -left-4 w-24 h-24 bg-blue-50 rounded-full z-0"></div>
-                <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl border-8 border-white">
-                  <img
-                    src="images/partners.jpg"
-                    alt="ODB Estates Founders"
-                    className="w-full h-auto object-cover aspect-4/5 md:aspect-auto hover:scale-105 transition-transform duration-700"
-                  />
-                </div>
-                <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-slate-100 rounded-2xl -z-10"></div>
-                </motion.div>
-              </div>
-            
-
-            {/* Right Side: Your Story */}
-
-            <div className="w-full lg:w-1/2">
-              <span className="text-blue-600 font-bold uppercase tracking-[0.2em] text-sm mb-4 block">
+              <h2 className="text-blue-900 font-bold tracking-widest uppercase text-sm mb-4">
                 Behind ODB Estates
-              </span>
-              <h2 className="text-4xl font-black text-slate-900 mb-6 leading-tight">
-                Experienced Partners in <br /> Property Investment
               </h2>
+              <h3 className="text-4xl md:text-5xl font-black text-slate-900 mb-6 leading-tight">
+              Experienced Partners in <br /> <span className="text-blue-900">Property Investment</span>
+              </h3>
               <div className="space-y-6 text-slate-600 text-lg leading-relaxed">
                 <p>
                   At ODB Estates, we don't just trade properties; we build
@@ -420,21 +403,38 @@ function App() {
                   believe in the power of the UK property market to create
                   lasting wealth when managed with precision.
                 </p>
-              </div>
+              </div>          
+            </motion.div>
 
+            {/* 2. The Image (Now comes second on mobile) */}
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="w-full lg:w-1/2 order-2 lg:order-1" // Added order-2
+            >
+              <div className="flex justify-center relative">
+                <img
+                  src="images/partners.jpg"
+                  alt="ODB Estates Founders"
+                  className="rounded-3xl shadow-2xl w-full max-w-md object-cover"
+                />
+                {/* Decorative element */}
+                <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-blue-50 rounded-full -z-10" />
+              </div>
               {/* Signature/Names Area */}
-              <div className="mt-10 pt-10 border-t border-slate-100 flex items-center gap-4">
-                <div className="h-12 w-1 bg-blue-900"></div>
+              <div className="mt-5 pt-5 border-t border-orange-200 flex items-center justify-center gap-4">
                 <div>
-                  <p className="font-bold text-slate-900 text-xl">
-                    Oliver & Numan
+                  <p className="font-bold text-blue-900 text-xl">
+                    Numan and Oliver
                   </p>
                   <p className="text-slate-400 text-sm uppercase tracking-widest font-semibold">
                     Founding Partners
                   </p>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
